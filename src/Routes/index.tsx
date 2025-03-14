@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "../Components/Header";
 import Home from "../Pages/Home";
 import Letter from "../Pages/Letter/Letter";
-import NameCard from "../Pages/NameCard/Letter";
+import DayPalette from "../Pages/DayPalette/DayPalette";
 
 function AppRoutes() {
   return (
@@ -11,7 +11,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/letter" element={<Letter />} />
-        <Route path="/namecard" element={<NameCard />} />
+        <Route path="/daypalette" element={<DayPalette />} />
       </Routes>
     </Router>
   );
