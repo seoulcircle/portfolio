@@ -16,31 +16,44 @@ const fetchWeatherData = async (
   url.searchParams.append("nx", "55");
   url.searchParams.append("ny", "127");
 
-  if (base_time) {
-    url.searchParams.append("base_time", base_time);
-  }
+  base_time
+    ? url.searchParams.append("base_time", base_time)
+    : url.searchParams.append("base_time", "0500");
 
   try {
     const response = await fetch(url.toString());
     if (!response.ok) throw new Error(`API 호출 실패: ${response.status}`);
 
     const data = await response.json();
+
     return data.response.body.items.item;
   } catch (error) {
     console.error(`날씨 API 호출 오류: ${endpoint}`, error);
     throw error;
   }
 };
+interface NowWeatherData {
+  category: string;
+  value: string;
+  obsrValue: string;
+}
+interface TmrWeatherData {
+  fcstDate: string;
+  fcstTime: string;
+  fcstValue: string;
+}
 
 // 초단기 실황 조회 (base_date, base_time 필요)
-export const getUltraShortForecast = async (
+export const getNowWeather = async (
   base_date: string,
   base_time: string
-) => {
+): Promise<NowWeatherData[]> => {
   return fetchWeatherData("getUltraSrtNcst", base_date, base_time);
 };
 
 // 단기 예보 조회 (base_date만 필요)
-export const getVillageForecast = async (base_date: string) => {
+export const getTmrWeather = async (
+  base_date: string
+): Promise<TmrWeatherData[]> => {
   return fetchWeatherData("getVilageFcst", base_date);
 };
