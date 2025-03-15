@@ -1,13 +1,25 @@
-import { useEffect, useState } from "react";
-import { getNowWeather, getTmrWeather } from "./DayApi";
+import { useEffect, useState, useMemo } from "react";
+import { getNowWeather, getTmrWeather, getDustData, IDustData } from "./DayApi";
 import * as S from "./styles";
-// import getRGBA from "./DayUtils";
+import { getRGBA, getLinearGradient } from "./DayUtils";
+import WeatherModal from "./components/Modal";
 
 const DayPalette = () => {
-  const [nowWeather, setNowWeather] = useState<any[]>([]);
-  const [tmrWeather, setTmrWeather] = useState<any[]>([]);
+  const [nowWeather, setNowWeather] = useState<{
+    T1H?: string;
+    RN1?: string;
+  } | null>(null);
+  const [tmrWeather, setTmrWeather] = useState<{
+    TMP?: string;
+    REH?: string;
+  } | null>(null);
+  const [dustData, setDustData] = useState<{ pm10Value?: string } | null>(null);
+  const [tmrDustData, setTmrDustData] = useState<{
+    pm10Value24?: string;
+  } | null>(null);
+  const [gradient, setGradient] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
 
-  // 시간 변환 (HH)
   const now = new Date();
   const minutes = now.getMinutes();
   const hours =
@@ -21,66 +33,119 @@ const DayPalette = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}${month}${day}`;
   };
-  const today = formatDate(now);
-  let tmrToday;
-  if (now.getHours() < 6) {
-    // 데이터가 6시 기준으로 갱신
-    tmrToday = formatDate(
-      new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
-    );
-  } else {
-    tmrToday = formatDate(now);
-  }
 
+  const today = formatDate(now);
+  const tmrToday =
+    now.getHours() < 6
+      ? formatDate(
+          new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+        )
+      : formatDate(now);
   const tomorrow = formatDate(
     new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
   );
 
   useEffect(() => {
-    // 정시 기준 현재 날씨 조회
     getNowWeather(today, hours + "00")
       .then((data) => {
-        const filteredData = data.filter(
-          (item) => ["T1H", "RN1"].includes(item.category).obsrValue // 날씨, 습도 카테고리
-        );
-        setNowWeather(filteredData);
+        const tmpValue = data.find(
+          (item) => item.category === "T1H"
+        )?.obsrValue;
+        const rehValue = data.find(
+          (item) => item.category === "RN1"
+        )?.obsrValue;
+        setNowWeather({ T1H: tmpValue, RN1: rehValue });
       })
       .catch(console.error);
-    // 다음날 날씨 조회
+
     getTmrWeather(tmrToday)
       .then((data) => {
-        const filteredData = data.find(
-          (item) => item.fcstDate === tomorrow && item.fcstTime === hours + "00"
+        const filteredData = data.filter(
+          (item) =>
+            item.fcstDate === tomorrow &&
+            item.fcstTime === hours + "00" &&
+            (item.category === "TMP" || item.category === "REH")
         );
-        setTmrWeather([filteredData]);
+
+        const tmpValue = filteredData.find(
+          (item) => item.category === "TMP"
+        )?.fcstValue;
+        const rehValue = filteredData.find(
+          (item) => item.category === "REH"
+        )?.fcstValue;
+
+        setTmrWeather({ TMP: tmpValue, REH: rehValue });
       })
       .catch(console.error);
-  }, [today, hours, tmrToday, tomorrow]);
 
-  // const todayColor = getRGBA(hours, temp, humidity, pm);
+    getDustData()
+      .then((data: IDustData[]) => {
+        const filteredData = data.find((item) => item.stationName === "종로구");
+        setDustData(
+          filteredData ? { pm10Value: filteredData.pm10Value } : null
+        );
+        setTmrDustData(
+          filteredData ? { pm10Value24: filteredData.pm10Value24 } : null
+        );
+      })
+      .catch(console.error);
+  }, [today, hours, tomorrow, tmrToday]);
+
+  const startRGBA = useMemo(
+    () =>
+      getRGBA(
+        +(nowWeather?.T1H ?? 0),
+        +(nowWeather?.RN1 ?? 0),
+        +hours,
+        +(dustData?.pm10Value ?? 0)
+      ),
+    [nowWeather, dustData, hours]
+  );
+
+  const endRGBA = useMemo(
+    () =>
+      getRGBA(
+        +(tmrWeather?.TMP ?? 0),
+        +(tmrWeather?.REH ?? 0),
+        +hours,
+        +(tmrDustData?.pm10Value24 ?? 0)
+      ),
+    [tmrWeather, tmrDustData, hours]
+  );
+
+  useEffect(() => {
+    setGradient(getLinearGradient(180, startRGBA, endRGBA));
+  }, [startRGBA, endRGBA]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const angle = (e.clientX / window.innerWidth) * 360; // 마우스 이동에 따라 각도 변경
+    setGradient(getLinearGradient(angle, startRGBA, endRGBA));
+  };
 
   return (
-    <div>
-      <S.ColorPalette />
-      <h1>날씨 정보</h1>
-      <h2>🌤️ 초단기 실황</h2>
-      <ul>
-        {nowWeather.map((item, index) => (
-          <li key={index}>
-            {item.category}: {item.obsrValue}
-          </li>
-        ))}
-      </ul>
-
-      <h2>📅 단기 예보</h2>
-      <ul>
-        {tmrWeather.map((item, index) => (
-          <li key={index}>
-            {item.category}: {item.fcstValue}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <S.Wrapper gradient={gradient} onMouseMove={handleMouseMove}>
+      <S.DotWrapper>
+        <S.Today startRGBA={startRGBA} onClick={() => setIsOpen(true)}>
+          Today
+        </S.Today>
+        <WeatherModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          nowWeather={nowWeather}
+          nowDustData={dustData}
+          startRGBA={startRGBA}
+        />
+        <S.SunMovement />
+        <S.Tomorrow endRGBA={endRGBA}></S.Tomorrow>
+        <WeatherModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          tmrWeather={tmrWeather}
+          tmrDustData={tmrDustData}
+          startRGBA={startRGBA}
+        />
+      </S.DotWrapper>
+    </S.Wrapper>
   );
 };
 

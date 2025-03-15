@@ -1,8 +1,7 @@
 import { css } from "@emotion/react";
 
-// ✅ `@import` 제거 (Google Fonts는 `index.html`에서 링크하는 것이 좋음)
 export const globalStyles = css`
-  @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
   /* Reset styles */
   html,
@@ -92,7 +91,7 @@ export const globalStyles = css`
     padding: 0;
     border: 0;
     font-size: 100%;
-    font: inherit;
+    font-family: "Inter", sans-serif;
     vertical-align: baseline;
   }
 
@@ -116,7 +115,12 @@ export const globalStyles = css`
   *[hidden] {
     display: none;
   }
-
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
   body {
     line-height: 1;
   }
