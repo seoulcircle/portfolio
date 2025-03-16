@@ -63,10 +63,10 @@ const WeatherModal = ({
     modalType === "today"
       ? Number(dustData?.pm10Value) || 0
       : Number(dustData?.pm10Value24) || 0;
-  console.log(dustData);
+
   const weatherColor =
     modalType === "today" ? colorRGBA?.startRGBA : colorRGBA?.endRGBA;
-  console.log(weatherColor);
+
   return (
     <AnimatePresence>
       {isOpen && (

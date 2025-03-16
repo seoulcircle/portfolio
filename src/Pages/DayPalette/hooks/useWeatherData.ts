@@ -29,18 +29,22 @@ const useWeatherData = (
   const [tmrDustData, setTmrDustData] = useState<DustData | null>(null);
 
   useEffect(() => {
+    if (!today || !hours || !tmrToday || !tomorrow) {
+      return;
+    }
+
     getNowWeather(today, hours + "00")
       .then((data) => {
         setNowWeather({
-          T1H: data.find((item) => item.category === "T1H")?.obsrValue,
-          REH: data.find((item) => item.category === "REH")?.obsrValue,
+          T1H: data?.find((item) => item.category === "T1H")?.obsrValue,
+          REH: data?.find((item) => item.category === "REH")?.obsrValue,
         });
       })
       .catch(console.error);
 
     getTmrWeather(tmrToday)
       .then((data) => {
-        const filteredData = data.filter(
+        const filteredData = data?.filter(
           (item) =>
             item.fcstDate === tomorrow &&
             item.fcstTime === hours + "00" &&
@@ -48,15 +52,17 @@ const useWeatherData = (
         );
 
         setTmrWeather({
-          TMP: filteredData.find((item) => item.category === "TMP")?.fcstValue,
-          REH: filteredData.find((item) => item.category === "REH")?.fcstValue,
+          TMP: filteredData?.find((item) => item.category === "TMP")?.fcstValue,
+          REH: filteredData?.find((item) => item.category === "REH")?.fcstValue,
         });
       })
       .catch(console.error);
 
     getDustData()
       .then((data: IDustData[]) => {
-        const filteredData = data.find((item) => item.stationName === "종로구");
+        const filteredData = data?.find(
+          (item) => item.stationName === "종로구"
+        );
         setDustData({ pm10Value: filteredData?.pm10Value });
         setTmrDustData({ pm10Value24: filteredData?.pm10Value24 });
       })

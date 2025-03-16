@@ -36,9 +36,15 @@ const useColor = (
     setGradient(getLinearGradient(180, startRGBA, endRGBA));
   }, [startRGBA, endRGBA]);
 
+  // const handleMouseMove = (e: React.MouseEvent) => {
+  //   const angle = (e.clientX / window.innerWidth) * 360; // 마우스 이동에 따라 각도 변경
+  //   setGradient(getLinearGradient(angle, startRGBA, endRGBA));
+  // };
   const handleMouseMove = (e: React.MouseEvent) => {
-    const angle = (e.clientX / window.innerWidth) * 360; // 마우스 이동에 따라 각도 변경
-    setGradient(getLinearGradient(angle, startRGBA, endRGBA));
+    requestAnimationFrame(() => {
+      const angle = (e.clientX / window.innerWidth) * 360;
+      setGradient(getLinearGradient(angle, startRGBA, endRGBA));
+    });
   };
 
   return { startRGBA, endRGBA, gradient, handleMouseMove };

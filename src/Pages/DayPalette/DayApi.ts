@@ -23,10 +23,11 @@ const fetchWeatherData = async (
     const response = await fetch(url.toString());
     if (!response.ok) throw new Error(`API 호출 실패: ${response.status}`);
     const data = await response.json();
-    return data.response.body.items.item;
+
+    return data.response.body.items.item || [];
   } catch (error) {
     console.error(`날씨 API 호출 오류: ${endpoint}`, error);
-    throw error;
+    return [];
   }
 };
 export interface INowWeather {

@@ -1,10 +1,13 @@
 import styled from "@emotion/styled";
 
 export const Wrapper = styled.div<{ gradient: string }>`
-  width: 100vw;
+  display: flex;
+  align-items: center;
+  width: 100%;
   height: 90%;
   background: ${(props) => props.gradient};
   transition: background 0.1s ease-out;
+  min-height: 400px;
 `;
 
 export const DotWrapper = styled.div`
@@ -13,6 +16,7 @@ export const DotWrapper = styled.div`
   justify-content: center;
   gap: 40px;
   height: 100%;
+  width: 100px;
   margin-left: 40px;
 `;
 export const Today = styled.button<{ startRGBA: string }>`
@@ -52,4 +56,10 @@ export const Tomorrow = styled.button<{ endRGBA: string }>`
   color: white;
   text-align: center;
   cursor: pointer;
+`;
+
+export const ModalWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  min-width: 500px;
 `;
