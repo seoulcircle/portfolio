@@ -57,6 +57,11 @@ export const DateText = styled.p`
 export const TimeText = styled.p`
   font-size: 40px;
   font-weight: bold;
+  & span {
+    font-size: 20px;
+    margin-left: 5px;
+    opacity: 0.5;
+  }
 `;
 
 export const WeatherText = styled.p`

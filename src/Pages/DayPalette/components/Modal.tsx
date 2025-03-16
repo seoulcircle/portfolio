@@ -1,48 +1,72 @@
-import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import * as S from "./Modal.style";
+
+interface WeatherData {
+  T1H?: string; // 오늘 온도
+  TMP?: string; // 내일 온도
+  REH?: string; // 습도 (공통)
+}
+
+interface DustData {
+  pm10Value?: string;
+  pm10Value24?: string;
+}
+
+interface ColorRGBA {
+  startRGBA?: string;
+  endRGBA?: string;
+}
 
 interface WeatherModalProps {
   isOpen: boolean;
   onClose: () => void;
-  nowWeather: { T1H?: string; RN1?: string } | null;
-  nowDustData: { pm10Value?: string } | null;
-  startRGBA: string;
-}
-
-interface TmrWeatherModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  tmrWeather: { TMP?: string; REH?: string } | null;
-  tmrDustData: { pm10Value24?: string } | null;
-  startRGBA: string;
+  weatherData: WeatherData | null;
+  dustData: DustData | null;
+  colorRGBA: ColorRGBA | null;
+  modalType: "today" | "tomorrow"; // 현재 모달 타입 구분
 }
 
 const WeatherModal = ({
   isOpen,
   onClose,
-  nowWeather,
-  nowDustData,
-  startRGBA,
+  weatherData,
+  dustData,
+  colorRGBA,
+  modalType,
 }: WeatherModalProps) => {
-  const [today, setToday] = useState<string>("");
-  const [hours, setHours] = useState<string>("");
-  const [minutes, setMinutes] = useState<string>("");
+  const now = new Date();
+  const today =
+    modalType === "today"
+      ? `${now.getFullYear()}.${(now.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}.${now.getDate().toString().padStart(2, "0")}`
+      : `${now.getFullYear()}.${(now.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}.${(now.getDate() + 1)
+          .toString()
+          .padStart(2, "0")}`;
 
-  useEffect(() => {
-    const now = new Date();
+  const time =
+    modalType === "today"
+      ? `${now.getHours().toString().padStart(2, "0")}:${now
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`
+      : `${now.getHours().toString().padStart(2, "0")}:00`;
 
-    // YYYY.MM.DD
-    const formattedDate = `${now.getFullYear()}.${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}.${now.getDate().toString().padStart(2, "0")}`;
-    setToday(formattedDate);
+  const temperature =
+    modalType === "today"
+      ? Number(weatherData?.T1H) || 0
+      : Number(weatherData?.TMP) || 0;
 
-    // HH:MM
-    setHours(now.getHours().toString().padStart(2, "0"));
-    setMinutes(now.getMinutes().toString().padStart(2, "0"));
-  }, []);
-
+  const fineDust =
+    modalType === "today"
+      ? Number(dustData?.pm10Value) || 0
+      : Number(dustData?.pm10Value24) || 0;
+  console.log(dustData);
+  const weatherColor =
+    modalType === "today" ? colorRGBA?.startRGBA : colorRGBA?.endRGBA;
+  console.log(weatherColor);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -62,24 +86,22 @@ const WeatherModal = ({
             <S.DataBox>
               <S.DateText>{today}</S.DateText>
               <S.TimeText>
-                {hours}:{minutes}
+                {time}
+                {modalType === "tomorrow" ? <span>기준</span> : null}
               </S.TimeText>
             </S.DataBox>
             <S.DataBox>
+              <S.WeatherText>TEMPERATURE : {temperature}℃</S.WeatherText>
               <S.WeatherText>
-                TEMPERATURE : {nowWeather?.T1H ?? 0}℃
+                HUMIDITY : {Number(weatherData?.REH) || 0}%
               </S.WeatherText>
-              <S.WeatherText>HUMIDITY : {nowWeather?.RN1 ?? 0}%</S.WeatherText>
-              <S.WeatherText>
-                FINE DUST : {nowDustData?.pm10Value ?? 0}㎍/㎥
-              </S.WeatherText>
+              <S.WeatherText>FINE DUST : {fineDust}㎍/㎥</S.WeatherText>
             </S.DataBox>
             <S.PaletteBox>
               <S.PaletteTitle>
-                WEATHER PALETTE :<br /> {startRGBA}
+                WEATHER PALETTE :<br /> {weatherColor}
               </S.PaletteTitle>
-
-              <S.ColorCircle color={startRGBA} />
+              <S.ColorCircle color={weatherColor ?? ""} />
             </S.PaletteBox>
           </S.ModalContent>
         </S.Overlay>
