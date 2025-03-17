@@ -16,7 +16,7 @@ export const Wrapper = styled.div<{ gradient: string }>`
   }
 `;
 
-export const DotWrapper = styled.div`
+export const CircleWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,7 +41,7 @@ export const Today = styled.button<{ startRGBA: string }>`
   border-radius: 50px;
   background-color: ${(props) => `${props.startRGBA}`};
   border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   color: white;
   text-align: center;
@@ -57,11 +57,11 @@ export const SunMovement = styled.button`
   width: 100px;
   height: 100px;
   border-radius: 50px;
-  background: rgba(255, 255, 255, 0.2); /* 반투명 배경 */
-  backdrop-filter: blur(10px); /* 유리 효과 */
-  -webkit-backdrop-filter: blur(10px); /* Safari 지원 */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   color: white;
   text-align: center;
@@ -78,7 +78,7 @@ export const Tomorrow = styled.button<{ endRGBA: string }>`
   height: 100px;
   border-radius: 50px;
   background-color: ${(props) => `${props.endRGBA}`};
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: none;
   padding: 20px;
   color: white;

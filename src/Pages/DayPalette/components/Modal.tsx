@@ -23,7 +23,7 @@ interface WeatherModalProps {
   weatherData: WeatherData | null;
   dustData: DustData | null;
   colorRGBA: ColorRGBA | null;
-  modalType: "today" | "tomorrow"; // 현재 모달 타입 구분
+  modalType: "today" | "tomorrow";
 }
 
 const WeatherModal = ({

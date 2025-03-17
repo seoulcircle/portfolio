@@ -22,7 +22,6 @@ const DayPalette = () => {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [slider, setSlider] = useState(false);
   const handleOutsideClick = (e: React.MouseEvent) => {
-    // 모달이 열려있을 때만 닫기
     if (activeModal || slider) {
       setActiveModal(null);
       setSlider(false);
@@ -35,7 +34,7 @@ const DayPalette = () => {
       onMouseMove={handleMouseMove}
       onClick={handleOutsideClick}
     >
-      <S.DotWrapper>
+      <S.CircleWrapper>
         <S.Today startRGBA={startRGBA} onClick={() => setActiveModal("today")}>
           Now
         </S.Today>
@@ -52,7 +51,7 @@ const DayPalette = () => {
         >
           Tomorrow
         </S.Tomorrow>
-      </S.DotWrapper>
+      </S.CircleWrapper>
       <S.ModalWrapper>
         <WeatherModal
           isOpen={activeModal === "today"}
@@ -66,6 +65,7 @@ const DayPalette = () => {
           isOpen={slider}
           onClose={() => setSlider(false)}
           colors={dayColors}
+          todayWeather={todayWeather}
         />
 
         <WeatherModal

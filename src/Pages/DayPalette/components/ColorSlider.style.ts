@@ -7,8 +7,9 @@ const breakpoints = {
 
 export const Overlay = styled(motion.div)`
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   position: fixed;
   top: 0;
   left: 0;
@@ -24,16 +25,11 @@ export const Overlay = styled(motion.div)`
 `;
 
 export const SliderWrapper = styled.div`
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 16px; */
   width: 70%;
-  margin-bottom: 190px;
+  margin-bottom: 100px;
   @media (max-width: ${breakpoints.mobile}) {
     width: 100%;
-    margin-bottom: 100px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -41,11 +37,11 @@ export const SliderTrack = styled.div`
   position: relative;
   width: 100%;
   input[type="range"] {
-    -webkit-appearance: none; /* 기본 스타일 제거 */
+    -webkit-appearance: none;
     width: 100%;
     height: 100%;
     height: 1px;
-    background: black; /* 트랙 색상 */
+    background: black;
     outline: none;
     transition: all 0.3s ease-in-out;
   }
@@ -92,5 +88,22 @@ export const TimeLabel = styled.span<{ isActive: boolean }>`
     & span {
       display: none;
     }
+  }
+`;
+
+export const WeatherData = styled.div`
+  position: absolute;
+  bottom: 160px;
+  color: white;
+  font-size: 20px;
+  & p {
+    margin-bottom: 5px;
+    &:first-of-type {
+      font-weight: 600;
+    }
+  }
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: 16px;
+    bottom: 100px;
   }
 `;

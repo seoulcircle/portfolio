@@ -2,102 +2,113 @@ import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import * as S from "./ColorSlider.style";
 
+interface TodayWeather {
+  time: string;
+  TMP?: string;
+  REH?: string;
+}
+
 interface SliderProps {
   isOpen: boolean;
   onClose: () => void;
   colors: { hour: number; color: string }[];
+  todayWeather: TodayWeather[];
 }
 
-const SunMovementSlider = ({ onClose, isOpen, colors }: SliderProps) => {
+const TodayWeatherSlider = ({
+  onClose,
+  isOpen,
+  colors,
+  todayWeather,
+}: SliderProps) => {
   const getCurrentHour = () => new Date().getHours();
   const [hour, setHour] = useState(getCurrentHour());
 
+  // open 될때마다 초기값 재설정
   useEffect(() => {
     if (isOpen) {
       setHour(getCurrentHour());
     }
   }, [isOpen]);
 
-  const bgcolorGradient = [
-    { hour: 0, color: "rgba(8, 129, 185, 0.3)" },
-    { hour: 12, color: "rgba(225, 162, 101, 0.3)" },
-    { hour: 23, color: "rgba(93, 99, 228, 0.4)" },
-  ];
-  const hourColor = colors;
-
-  const getColorByHour = (
-    hour: number,
-    gradient: { hour: number; color: string }[],
-    isRGBA = false
-  ) => {
-    for (let i = 0; i < gradient.length - 1; i++) {
-      const start = gradient[i];
-      const end = gradient[i + 1];
-
-      if (hour >= start.hour && hour <= end.hour) {
-        const ratio = (hour - start.hour) / (end.hour - start.hour);
-
-        const startValues =
-          start.color.match(/\d+(\.\d+)?/g)?.map(Number) || [];
-        const endValues = end.color.match(/\d+(\.\d+)?/g)?.map(Number) || [];
-
-        const blended = startValues.map(
-          (startVal, idx) =>
-            Math.round(startVal * (1 - ratio) + (endValues[idx] || 0) * ratio) // 시작 색과 마지막 색을 시간 비율만큼 계산
-        );
-
-        if (isRGBA) {
-          return `rgba(${blended[0]}, ${blended[1]}, ${blended[2]}, ${Math.max(
-            blended[3] || 0.3,
-            0.3
-          )})`;
-        }
-        return `rgb(${blended.slice(0, 3).join(", ")})`;
-      }
-    }
-
-    return isRGBA ? "rgba(11, 24, 74, 0.4)" : "rgb(201, 205, 208)";
-  };
-
-  // 현재 hour에 맞는 색상
-  const getColorByHourColor = (hour: number) => {
-    // `hourColor` 배열에서 현재 `hour`에 해당하는 색상 찾기
-    const hourData = hourColor.find((data) => data.hour === hour);
-    return hourData ? hourData.color : "rgb(201, 205, 208)"; // 기본 색상 설정
-  };
-
-  const getColorByHourBgColor = (hour: number) =>
-    getColorByHour(hour, bgcolorGradient, true);
-
-  const getColorByHourShadow = (hour: number) => {
-    const color = getColorByHourColor(hour);
-    return `0px 0px 20px 5px ${color}`;
-  };
+  // 슬라이더 움직였을 때 시간 value 받아냄
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHour(parseInt(e.target.value, 10));
   };
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault(); // ✅ 기본 터치 스크롤 이벤트 방지
-    document.body.style.overflow = "hidden"; // ✅ 스크롤 방지
+
+  // 시간 value에 맞는 색상 칮기
+  const hourColor = colors;
+  const getColorByHourColor = (hour: number) => {
+    const hourData = hourColor.find((data) => data.hour === hour);
+    return hourData ? hourData.color : "rgb(201, 205, 208)";
   };
 
-  const handleTouchEnd = () => {
-    document.body.style.overflow = "auto"; // ✅ 스크롤 다시 활성화
+  // overlay 시간 비율에 맞춰 그라디언트 처리
+  const bgcolorGradient = [
+    { hour: 6, color: [0, 36, 52, 0.3] },
+    { hour: 14, color: [225, 162, 101, 0.3] },
+    { hour: 23, color: [93, 99, 228, 0.3] },
+  ];
+  const getColorByHour = (
+    hour: number,
+    gradient: { hour: number; color: number[] }[]
+  ) => {
+    // 현재 hour가 포함된 색상 구간 찾기
+    const index = gradient.findIndex(({ hour: h }) => hour < h) - 1;
+    if (index < 0) return "rgba(11, 24, 74, 0.4)"; // 기본 색상 반환
+
+    const start = gradient[index];
+    const end = gradient[index + 1] || start; // 23시 이후 start 유지
+    const ratio = (hour - start.hour) / (end.hour - start.hour); // 시간 비율 계산
+    const blended = start.color.map(
+      (startVal, i) =>
+        i === 3
+          ? (startVal * (1 - ratio) + end.color[i] * ratio).toFixed(2) // A 소수점 2자리 유지
+          : Math.round(startVal * (1 - ratio) + end.color[i] * ratio) // R, G, B는 정수 변환
+    );
+
+    return `rgba(${blended.join(", ")})`;
   };
-  const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault(); // ✅ 터치 이동 시 스크롤 방지
+  const getColorByHourBgColor = (hour: number) =>
+    getColorByHour(hour, bgcolorGradient);
+
+  // 원형 shadow 색상 처리
+  const getShadowByHour = (hour: number) => {
+    const color = getColorByHourColor(hour);
+    return `0px 0px 20px 5px ${color}`;
   };
 
+  // 모바일에서 슬라이더 이외에 전체화면 터치 스크롤 방지
+  useEffect(() => {
+    const disableScroll = (e: TouchEvent) => {
+      if (!(e.target instanceof HTMLInputElement)) {
+        e.preventDefault(); // 슬라이더가 아닌 경우만 스크롤 차단
+      }
+    };
+    document.addEventListener("touchmove", disableScroll, { passive: false });
+    return () => {
+      // 언마운트되면 이벤트 제거
+      document.removeEventListener("touchmove", disableScroll);
+    };
+  }, []);
+
+  // 시간 value에 맞는 날씨 정보 리턴
+  const getWeatherData = (hour: number) => {
+    const data = todayWeather.find((item) => Number(item.time) === hour);
+    return {
+      temperature: data?.TMP ?? "0",
+      humidity: data?.REH ?? "0",
+    };
+  };
+  const { temperature, humidity } = getWeatherData(hour);
+
+  // 시간 value에 따라서 원형 포지션 설정
   const getBottomPosition = (hour: number) => {
     const minHour = 6;
     const maxHour = 23;
     const minBottom = 20;
     const maxBottom = 200;
-
-    // 시간(6~23)을 0°~180°로 변환
-    const angle = ((hour - minHour) / (maxHour - minHour)) * Math.PI; // 라디안 단위 변환
-
-    // 사인 함수 적용하여 반원형 변환
+    const angle = ((hour - minHour) / (maxHour - minHour)) * Math.PI;
     return minBottom + Math.sin(angle) * (maxBottom - minBottom);
   };
 
@@ -118,16 +129,13 @@ const SunMovementSlider = ({ onClose, isOpen, colors }: SliderProps) => {
                 max="23"
                 value={hour}
                 onChange={handleSliderChange}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
               />
               <S.SliderSun
                 animate={{
                   left: `${((hour - 6) / 17) * 100 - 5}%`,
                   bottom: `${getBottomPosition(hour)}px`,
                   backgroundColor: getColorByHourColor(hour),
-                  boxShadow: getColorByHourShadow(hour),
+                  boxShadow: getShadowByHour(hour),
                 }}
                 transition={{ type: "tween", duration: 0.5 }}
               />
@@ -136,15 +144,20 @@ const SunMovementSlider = ({ onClose, isOpen, colors }: SliderProps) => {
               {Array.from({ length: 18 }).map((_, index) => (
                 <S.TimeLabel key={index} isActive={index + 6 === hour}>
                   {index + 6}
-                  <span>시</span> {/* 6시부터 23시 */}
+                  <span>시</span>
                 </S.TimeLabel>
               ))}
             </S.TimeLabels>
           </S.SliderWrapper>
+          <S.WeatherData>
+            <p>{hour}시</p>
+            <p>온도: {temperature}°C</p>
+            <p>습도: {humidity}%</p>
+          </S.WeatherData>
         </S.Overlay>
       )}
     </AnimatePresence>
   );
 };
 
-export default SunMovementSlider;
+export default TodayWeatherSlider;

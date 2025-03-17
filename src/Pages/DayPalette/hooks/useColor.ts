@@ -11,6 +11,7 @@ const useColor = (
 ) => {
   const [gradient, setGradient] = useState<string>("");
 
+  // 그라디언트 시작 색상
   const startRGBA = useMemo(
     () =>
       getRGBA(
@@ -22,6 +23,7 @@ const useColor = (
     [nowWeather, dustData, hours]
   );
 
+  // 그라디언트 끝 색상
   const endRGBA = useMemo(
     () =>
       getRGBA(
@@ -33,17 +35,20 @@ const useColor = (
     [tmrWeather, tmrDustData, hours]
   );
 
+  // Today의 원형 색상
   const dayColors = useMemo(() => {
     return todayWeather.map((data) => ({
-      hour: +(data.time ?? 0), // `time`을 숫자로 변환하여 `hour` 필드에 저장
+      hour: +(data.time ?? 0),
       color: getRGBA(+(data.TMP ?? 0), +(data.REH ?? 0), +(data.time ?? 0), 50),
     }));
   }, [todayWeather]);
 
+  // 첫 로딩시 그라디언트 각도 설정
   useEffect(() => {
     setGradient(getLinearGradient(180, startRGBA, endRGBA));
   }, [startRGBA, endRGBA]);
 
+  // 마우스의 위치에 따라 그라디언트 각도 변경
   const handleMouseMove = (e: React.MouseEvent) => {
     requestAnimationFrame(() => {
       const angle = (e.clientX / window.innerWidth) * 360;

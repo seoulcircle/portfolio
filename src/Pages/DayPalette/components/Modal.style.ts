@@ -24,7 +24,6 @@ export const ModalContent = styled(motion.div)`
   min-width: 430px;
   min-height: 400px;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.3);
   text-align: center;
   color: white;
   text-align: left;
