@@ -29,7 +29,7 @@ export const SliderWrapper = styled.div`
   margin-bottom: 100px;
   @media (max-width: ${breakpoints.mobile}) {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 80px;
   }
 `;
 
@@ -65,23 +65,23 @@ export const SliderSun = styled(motion.div)`
   @media (max-width: ${breakpoints.mobile}) {
     width: 50px;
     height: 50px;
-    filter: blur(3px);
+    filter: blur(2px);
   }
 `;
 export const TimeLabels = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
   width: 100%;
   margin-top: 10px;
-  position: relative;
 `;
 
 export const TimeLabel = styled.span<{ isActive: boolean }>`
+  width: 30px;
+  height: 16px;
   font-size: 14px;
   color: ${(props) => (props.isActive ? "#fff" : "#dbdbdb")};
   transition: all 0.3s;
-  width: 30px;
-  height: 16px;
   text-align: center;
   @media (max-width: ${breakpoints.mobile}) {
     font-size: 10px;
@@ -103,7 +103,7 @@ export const WeatherData = styled.div`
     }
   }
   @media (max-width: ${breakpoints.mobile}) {
+    bottom: 140px;
     font-size: 16px;
-    bottom: 100px;
   }
 `;

@@ -15,22 +15,21 @@ export const Overlay = styled(motion.div)`
 `;
 
 export const ModalContent = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  min-width: 430px;
-  min-height: 400px;
   position: relative;
-  text-align: center;
-  color: white;
-  text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  min-width: 430px;
+  min-height: 400px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: white;
   line-height: 1.2;
+  text-align: left;
+  border-radius: 12px;
   @media (max-width: ${breakpoints.mobile}) {
     min-width: 300px;
     min-height: 350px;
@@ -41,11 +40,14 @@ export const CloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
-  border: none;
   background: transparent;
-  font-size: 24px;
-  cursor: pointer;
   color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: 16px;
+  }
 `;
 export const DataBox = styled.div`
   display: flex;
@@ -73,7 +75,6 @@ export const TimeText = styled.p`
 
 export const WeatherText = styled.p`
   font-size: 30px;
-  font-weight: 300;
   margin: 3px 0;
   @media (max-width: ${breakpoints.mobile}) {
     font-size: 20px;
@@ -93,7 +94,7 @@ export const PaletteTitle = styled.p`
   font-size: 24px;
   margin-top: 10px;
   font-size: 26px;
-  font-weight: 300;
+
   @media (max-width: ${breakpoints.mobile}) {
     font-size: 20px;
   }
@@ -104,13 +105,13 @@ export const PaletteText = styled.p`
 `;
 
 export const ColorCircle = styled.div<{ color: string }>`
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 20px;
   width: 50px;
   height: 50px;
   background: ${({ color }) => color};
   border-radius: 25px;
-  display: inline-block;
-  margin-top: 10px;
-  margin-left: 20px;
   @media (max-width: ${breakpoints.mobile}) {
     margin-left: 0;
   }
