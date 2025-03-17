@@ -16,6 +16,11 @@ interface DustData {
   pm10Value?: string;
   pm10Value24?: string;
 }
+interface TodayWeather {
+  time: string;
+  TMP?: string;
+  REH?: string;
+}
 
 const useWeatherData = (
   today: string,
@@ -25,6 +30,7 @@ const useWeatherData = (
 ) => {
   const [nowWeather, setNowWeather] = useState<WeatherData | null>(null);
   const [tmrWeather, setTmrWeather] = useState<WeatherData | null>(null);
+  const [todayWeather, setTodayWeather] = useState<TodayWeather[]>([]);
   const [dustData, setDustData] = useState<DustData | null>(null);
   const [tmrDustData, setTmrDustData] = useState<DustData | null>(null);
 
@@ -32,7 +38,7 @@ const useWeatherData = (
     if (!today || !hours || !tmrToday || !tomorrow) {
       return;
     }
-
+    // 현재의 날씨 데이터
     getNowWeather(today, hours + "00")
       .then((data) => {
         setNowWeather({
@@ -42,6 +48,7 @@ const useWeatherData = (
       })
       .catch(console.error);
 
+    // 내일의 날씨 데이터
     getTmrWeather(tmrToday)
       .then((data) => {
         const filteredData = data?.filter(
@@ -58,6 +65,34 @@ const useWeatherData = (
       })
       .catch(console.error);
 
+    // 오늘의 날씨 데이터
+    getTmrWeather(today)
+      .then((data) => {
+        const filteredData = data?.filter(
+          (item) =>
+            item.fcstDate === today &&
+            (item.category === "TMP" || item.category === "REH")
+        );
+
+        const groupedData = filteredData?.reduce<
+          { time: string; TMP?: string; REH?: string }[]
+        >((acc, item) => {
+          const time = item.fcstTime.slice(0, 2).padStart(2, "0");
+          const category = item.category as "TMP" | "REH";
+          const existing = acc.find((entry) => entry.time === time);
+
+          if (existing) {
+            existing[category] = item.fcstValue;
+          } else {
+            acc.push({ time, [item.category]: item.fcstValue });
+          }
+
+          return acc;
+        }, []);
+        setTodayWeather(groupedData);
+      })
+      .catch(console.error);
+
     getDustData()
       .then((data: IDustData[]) => {
         const filteredData = data?.find(
@@ -68,8 +103,7 @@ const useWeatherData = (
       })
       .catch(console.error);
   }, [today, hours, tomorrow, tmrToday]);
-
-  return { nowWeather, tmrWeather, dustData, tmrDustData };
+  return { nowWeather, tmrWeather, dustData, tmrDustData, todayWeather };
 };
 
 export default useWeatherData;

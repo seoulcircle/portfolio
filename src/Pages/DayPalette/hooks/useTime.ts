@@ -23,12 +23,12 @@ const useTime = () => {
         ? String((now.getHours() - 1 + 24) % 24).padStart(2, "0")
         : String(now.getHours()).padStart(2, "0");
 
-    const today =
-      minutes < 10
-        ? formatDate(
-            new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
-          )
-        : formatDate(now);
+    const today = formatDate(now);
+    // minutes < 10
+    //   ? formatDate(
+    //       new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+    //     )
+    //   : formatDate(now);
 
     const tmrToday =
       now.getHours() < 6

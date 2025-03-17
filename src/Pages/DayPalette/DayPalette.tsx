@@ -4,22 +4,18 @@ import WeatherModal from "./components/Modal";
 import useTime from "./hooks/useTime";
 import useWeatherData from "./hooks/useWeatherData";
 import useColor from "./hooks/useColor";
-import SunMovementSlider from "./components/SunSlider";
-import { AnimatePresence } from "framer-motion";
+import ColorSlider from "./components/ColorSlider";
 
 const DayPalette = () => {
   const { hours, today, tmrToday, tomorrow } = useTime();
-  const { nowWeather, tmrWeather, dustData, tmrDustData } = useWeatherData(
-    today,
-    hours,
-    tmrToday,
-    tomorrow
-  );
-  const { gradient, startRGBA, endRGBA, handleMouseMove } = useColor(
+  const { nowWeather, tmrWeather, dustData, tmrDustData, todayWeather } =
+    useWeatherData(today, hours, tmrToday, tomorrow);
+  const { gradient, startRGBA, endRGBA, handleMouseMove, dayColors } = useColor(
     nowWeather,
     dustData,
     tmrWeather,
     tmrDustData,
+    todayWeather,
     hours
   );
 
@@ -41,14 +37,14 @@ const DayPalette = () => {
     >
       <S.DotWrapper>
         <S.Today startRGBA={startRGBA} onClick={() => setActiveModal("today")}>
-          Today
+          Now
         </S.Today>
         <S.SunMovement
           onClick={(e) => {
             setSlider((prev) => !prev);
           }}
         >
-          Solar
+          Today
         </S.SunMovement>
         <S.Tomorrow
           endRGBA={endRGBA}
@@ -66,7 +62,11 @@ const DayPalette = () => {
           colorRGBA={{ startRGBA, endRGBA }}
           modalType="today"
         />
-        <SunMovementSlider isOpen={slider} onClose={() => setSlider(false)} />
+        <ColorSlider
+          isOpen={slider}
+          onClose={() => setSlider(false)}
+          colors={dayColors}
+        />
 
         <WeatherModal
           isOpen={activeModal === "tomorrow"}

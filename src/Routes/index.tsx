@@ -9,7 +9,7 @@ function AppRoutes() {
     <Router>
       <Header />
       <Routes>
-        <Route index element={<Home />} /> {/* 정확히 "/" 일때만 Home 표시 */}
+        <Route index element={<Home />} />
         <Route path="/letter" element={<Letter />} />
         <Route path="/daypalette" element={<DayPalette />} />
       </Routes>

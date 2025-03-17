@@ -1,0 +1,96 @@
+/** @jsxImportSource @emotion/react */
+import styled from "@emotion/styled";
+import { motion } from "framer-motion";
+const breakpoints = {
+  mobile: "639px",
+};
+
+export const Overlay = styled(motion.div)`
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 1200px;
+  padding-left: 100px;
+  @media (max-width: ${breakpoints.mobile}) {
+    min-width: 300px;
+    padding-left: 0;
+    padding: 0 5vw;
+  }
+`;
+
+export const SliderWrapper = styled.div`
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px; */
+  width: 70%;
+  margin-bottom: 190px;
+  @media (max-width: ${breakpoints.mobile}) {
+    width: 100%;
+    margin-bottom: 100px;
+  }
+`;
+
+export const SliderTrack = styled.div`
+  position: relative;
+  width: 100%;
+  input[type="range"] {
+    -webkit-appearance: none; /* 기본 스타일 제거 */
+    width: 100%;
+    height: 100%;
+    height: 1px;
+    background: black; /* 트랙 색상 */
+    outline: none;
+    transition: all 0.3s ease-in-out;
+  }
+  & ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: black;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+`;
+
+export const SliderSun = styled(motion.div)`
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  filter: blur(5px);
+  @media (max-width: ${breakpoints.mobile}) {
+    width: 50px;
+    height: 50px;
+    filter: blur(3px);
+  }
+`;
+export const TimeLabels = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  position: relative;
+`;
+
+export const TimeLabel = styled.span<{ isActive: boolean }>`
+  font-size: 14px;
+  color: ${(props) => (props.isActive ? "#fff" : "#dbdbdb")};
+  transition: all 0.3s;
+  width: 30px;
+  height: 16px;
+  text-align: center;
+  @media (max-width: ${breakpoints.mobile}) {
+    font-size: 10px;
+    & span {
+      display: none;
+    }
+  }
+`;

@@ -6,6 +6,7 @@ const useColor = (
   dustData: { pm10Value?: string } | null,
   tmrWeather: { TMP?: string; REH?: string } | null,
   tmrDustData: { pm10Value24?: string } | null,
+  todayWeather: { time?: string; TMP?: string; REH?: string }[],
   hours: string
 ) => {
   const [gradient, setGradient] = useState<string>("");
@@ -32,14 +33,17 @@ const useColor = (
     [tmrWeather, tmrDustData, hours]
   );
 
+  const dayColors = useMemo(() => {
+    return todayWeather.map((data) => ({
+      hour: +(data.time ?? 0), // `time`을 숫자로 변환하여 `hour` 필드에 저장
+      color: getRGBA(+(data.TMP ?? 0), +(data.REH ?? 0), +(data.time ?? 0), 50),
+    }));
+  }, [todayWeather]);
+
   useEffect(() => {
     setGradient(getLinearGradient(180, startRGBA, endRGBA));
   }, [startRGBA, endRGBA]);
 
-  // const handleMouseMove = (e: React.MouseEvent) => {
-  //   const angle = (e.clientX / window.innerWidth) * 360; // 마우스 이동에 따라 각도 변경
-  //   setGradient(getLinearGradient(angle, startRGBA, endRGBA));
-  // };
   const handleMouseMove = (e: React.MouseEvent) => {
     requestAnimationFrame(() => {
       const angle = (e.clientX / window.innerWidth) * 360;
@@ -47,7 +51,7 @@ const useColor = (
     });
   };
 
-  return { startRGBA, endRGBA, gradient, handleMouseMove };
+  return { startRGBA, endRGBA, gradient, handleMouseMove, dayColors };
 };
 
 export default useColor;

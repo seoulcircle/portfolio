@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
-
+const breakpoints = {
+  mobile: "639px",
+};
 export const Wrapper = styled.div<{ gradient: string }>`
   display: flex;
   align-items: center;
@@ -8,6 +10,10 @@ export const Wrapper = styled.div<{ gradient: string }>`
   background: ${(props) => props.gradient};
   transition: background 0.1s ease-out;
   min-height: 400px;
+  @media (max-width: ${breakpoints.mobile}) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 `;
 
 export const DotWrapper = styled.div`
@@ -18,6 +24,16 @@ export const DotWrapper = styled.div`
   height: 100%;
   width: 100px;
   margin-left: 40px;
+  z-index: 999;
+  @media (max-width: ${breakpoints.mobile}) {
+    flex-direction: row;
+    gap: 10vw;
+    width: 100%;
+    margin: 0;
+    margin-top: 20px;
+    height: auto;
+    align-items: center;
+  }
 `;
 export const Today = styled.button<{ startRGBA: string }>`
   width: 100px;
@@ -30,6 +46,12 @@ export const Today = styled.button<{ startRGBA: string }>`
   color: white;
   text-align: center;
   cursor: pointer;
+  @media (max-width: ${breakpoints.mobile}) {
+    width: 70px;
+    height: 70px;
+    border-radius: 35px;
+    padding: 0;
+  }
 `;
 export const SunMovement = styled.button`
   width: 100px;
@@ -44,6 +66,12 @@ export const SunMovement = styled.button`
   color: white;
   text-align: center;
   cursor: pointer;
+  @media (max-width: ${breakpoints.mobile}) {
+    width: 70px;
+    height: 70px;
+    border-radius: 35px;
+    padding: 0;
+  }
 `;
 export const Tomorrow = styled.button<{ endRGBA: string }>`
   width: 100px;
@@ -56,10 +84,19 @@ export const Tomorrow = styled.button<{ endRGBA: string }>`
   color: white;
   text-align: center;
   cursor: pointer;
+  @media (max-width: ${breakpoints.mobile}) {
+    width: 70px;
+    height: 70px;
+    border-radius: 35px;
+    padding: 0;
+  }
 `;
 
 export const ModalWrapper = styled.div`
   width: 100%;
   height: 100%;
   min-width: 500px;
+  @media (max-width: ${breakpoints.mobile}) {
+    min-width: auto;
+  }
 `;
