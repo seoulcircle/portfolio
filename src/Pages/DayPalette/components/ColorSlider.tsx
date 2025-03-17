@@ -47,7 +47,7 @@ const TodayWeatherSlider = ({
   const bgcolorGradient = [
     { hour: 6, color: [0, 36, 52, 0.3] },
     { hour: 14, color: [225, 162, 101, 0.3] },
-    { hour: 23, color: [93, 99, 228, 0.3] },
+    { hour: 24, color: [0, 7, 153, 0.3] },
   ];
   const getColorByHour = (
     hour: number,
