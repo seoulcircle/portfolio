@@ -4,7 +4,7 @@ const HeaderDiv = styled.div`
 `;
 
 function Header() {
-  return <HeaderDiv>Header</HeaderDiv>;
+  return <HeaderDiv>This is Header</HeaderDiv>;
 }
 
 export default Header;
